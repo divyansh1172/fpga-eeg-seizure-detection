@@ -1,0 +1,19 @@
+================================================================================
+ EE2000 Feature Accumulator Self-Checking Verification
+================================================================================
+[TEST 1A] Streaming Window 0 DWT coefficients...
+Window 0 Features Streamed: 176 / 176 | Max Error: 0 LSB
+[PASS] Window 0 feature vector matches golden reference bit-exactly (0 LSB error)!
+
+[TEST 1B] Streaming Window 1 DWT coefficients (Ping-Pong Bank 1)...
+Window 1 Features Streamed: 176 / 176 | Max Error: 0 LSB
+[PASS] Window 1 feature vector matches golden reference bit-exactly (0 LSB error)!
+
+[TEST 2] Testing window boundary race (simultaneous coeff_valid & window_sync)...
+[PASS] Boundary race handled cleanly with double-buffering: zero hang, zero collision!
+
+================================================================================
+ ALL TESTS PASSED! Feature accumulator is 100% bit-exact and verified.
+================================================================================
+
+rtl/tb_feature_accumulator.v:304: $finish called at 62965000 (1ps)

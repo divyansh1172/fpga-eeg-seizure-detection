@@ -1,0 +1,57 @@
+EEG Seizure Detection on FPGA (DWT + SVM): full details
+1. What it is
+
+A system that reads brainwave (EEG) recordings, extracts features from them using a wavelet transform, and classifies each short window as seizure or non-seizure. When a window is flagged, the board raises a live alert on LEDs, the 7-segment display or a screen. The board processes the data as it streams in, the way a wearable seizure alarm would.
+
+2. The dataset: CHB-MIT Scalp EEG Database
+
+This is the standard open benchmark for seizure detection, and it's free on PhysioNet with no approval process.
+
+Recordings: 22 pediatric subjects (23 cases) with intractable seizures, recorded at Boston Children's Hospital.
+Signal spec: sampled at 256 Hz with 16-bit resolution.
+Size and labels: 664 EDF files, of which 129 contain seizures. Clinicians annotated the onset and end of 182 seizures.
+Data quirk: channel layouts change between recordings. Most papers use the 23-channel, 10-20-montage recordings, or pick only the channels present throughout. You'll have to make this call early.
+3. The signal-processing pipeline
+Stage	What happens	Where it runs
+Windowing	Cut the stream into short epochs (papers commonly use 1–4 s windows, often overlapping)	FPGA
+Pre-filtering	Band-limit to the useful EEG range (e.g. 0.5–25 Hz in several papers)	FPGA
+DWT	Multi-level Daubechies (db4) wavelet decomposition splits each window into sub-bands that roughly match the clinical EEG rhythms (delta, theta, alpha, beta)	FPGA
+Feature extraction	Per sub-band statistics such as energy, standard deviation and variance of the wavelet coefficients	FPGA
+Classification	A linear SVM (a dot product plus a threshold) or a small MLP	FPGA, with weights trained offline
+Post-processing	Require several consecutive positive windows before raising an alarm, to cut false alarms	FPGA
+
+Everything is trained offline in Python (scikit-learn or PyTorch). Only the frozen weights go into BRAM, which is the same offline-training, hardware-inference split used in every strong project in this thread.
+
+4. The literature you can replicate
+
+These are all from this search, and worth re-checking before you cite them formally.
+
+FPGA implementation of DWT + statistical features + feed-forward neural network, published in Applied Soft Computing (2025). It targets single- and multi-channel seizure signals.
+Wang et al., cited within that paper as a hardware seizure detector using FFT features and an SVM. On CHB-MIT it reports 6 s mean detection latency, 98.4% sensitivity, and 0.356 false detections per hour. This is a good target for your mid-term replication.
+"An EEG based real-time epilepsy seizure detection approach using DWT and machine learning" (Biomedical Signal Processing and Control, 2022). It reports 96.38% accuracy and 96.15% sensitivity on CHB-MIT, with a 3.24% false-positive rate.
+Shoeb et al. (2010), the dataset's original paper. It reports 96% sensitivity with an average 4.6 s latency, which is the classic baseline.
+65 nm, 0.448 mW EEG processor with lifting-wavelet + parallel SVM (Computers in Biology and Medicine, 2022). It's an ASIC rather than an FPGA, but it's a good reference for how the architecture is laid out.
+The IET Circuits, Devices & Systems (2022) paper from the earlier round (Daubechies-4 DWT with a systolic-array linear SVM on FPGA) is still your closest architectural match.
+5. Metrics you'd report
+Sensitivity (fraction of seizures caught) and false detections per hour. These are the standard pair for this task.
+Detection latency (seconds from clinician-marked onset to your alert).
+FPGA resource use: LUTs, DSP48s, BRAM, and power if you can measure it.
+Bit-exact match between your Python fixed-point model and the Verilog output.
+6. Hardware requirements
+Baseline: none beyond the board. Stream the pre-processed dataset from a PC over UART, or store a few test segments in BRAM. The dataset is huge (tens of GB), so you'd preselect a few subjects' seizure and non-seizure clips and convert them offline.
+Optional extension: a live EEG front-end. I wouldn't do it, because scalp EEG is microvolt-level and very noisy, and the risk profile is very different from dataset playback.
+7. Team split (4 people)
+Member 1: literature, dataset curation (channel selection, seizure/non-seizure windowing), report.
+Member 2: Python pipeline with DWT, features, SVM training and the patient-wise evaluation; the fixed-point model.
+Member 3: Verilog for DWT filter banks and feature extraction; testbenches.
+Member 4: Verilog SVM/decision logic and post-processing, UART or display integration, demo.
+8. Timeline against your deadlines
+By 27 Sep (preliminary): problem statement and literature review.
+By 25 Oct (mid-term): the Python pipeline working on a subset of CHB-MIT, with your replication of one published sensitivity and false-alarm result.
+By 13 Nov (final): Verilog DWT + features + classifier on the board, bit-exact against Python, with resource numbers and a live playback demo.
+9. Honest risks
+Patient-specific versus cross-patient results. Many headline numbers (97–100% sensitivity) are patient-specific, meaning trained and tested on the same person. Cross-patient accuracy is noticeably worse. Decide which you're doing and state it, or a grader may compare you to the wrong benchmark.
+Severe class imbalance. Seizures are a tiny fraction of the hours recorded. You'll need balanced sampling or class weighting, and you should report sensitivity and false alarms per hour rather than raw accuracy, as in the voice-pathology project.
+Data handling is more work than it looks. EDF parsing, changing channel montages and a very large download all take time. Budget a week for this before any DSP.
+The "needs an FPGA" question, applied honestly. This is the same objection you raised about QRS detection. At 256 Hz per channel, a single channel is easy for an ESP32. The FPGA argument only gets strong if you process all 18–23 channels in parallel with a shared, time-multiplexed DWT engine, which is what the low-power papers do. Frame it that way, or a viva examiner will ask why you didn't use a microcontroller.
+Novelty. Several FPGA seizure detectors exist, so you're re-implementing a known design, not originating a new one. That's fine for replication marks but weaker on originality than CFARnet or LISTA.

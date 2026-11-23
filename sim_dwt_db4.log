@@ -1,0 +1,51 @@
+================================================================================
+ EE2000 5-Level Daubechies-4 DWT Self-Checking Verification
+================================================================================
+[TEST 1] Streaming 11,264 EEG samples across all 22 channels...
+
+--- Test 1 Results (Multichannel EEG Stream) ---
+D3 Output Count: 1408 / 1408 expected | Max Error: 0 LSB
+D4 Output Count: 704 /  704 expected | Max Error: 0 LSB
+D5 Output Count: 352 /  352 expected | Max Error: 0 LSB
+A5 Output Count: 352 /  352 expected | Max Error: 0 LSB
+[PASS] All subband output counts match exact expected counts!
+[PASS] Quantization fidelity verified! (Max Error <= 1 LSB, Bit-Exact = 0 LSB)
+
+--- Per-Channel Output Rate Breakdown (2.0 s Duration) ---
+Ch | D3 Rate (exp 64) | D4 Rate (exp 32) | D5 Rate (exp 16) | A5 Rate (exp 16)
+-------------------------------------------------------------------------
+  0|        64        |        32        |        16        |        16
+  1|        64        |        32        |        16        |        16
+  2|        64        |        32        |        16        |        16
+  3|        64        |        32        |        16        |        16
+  4|        64        |        32        |        16        |        16
+  5|        64        |        32        |        16        |        16
+  6|        64        |        32        |        16        |        16
+  7|        64        |        32        |        16        |        16
+  8|        64        |        32        |        16        |        16
+  9|        64        |        32        |        16        |        16
+ 10|        64        |        32        |        16        |        16
+ 11|        64        |        32        |        16        |        16
+ 12|        64        |        32        |        16        |        16
+ 13|        64        |        32        |        16        |        16
+ 14|        64        |        32        |        16        |        16
+ 15|        64        |        32        |        16        |        16
+ 16|        64        |        32        |        16        |        16
+ 17|        64        |        32        |        16        |        16
+ 18|        64        |        32        |        16        |        16
+ 19|        64        |        32        |        16        |        16
+ 20|        64        |        32        |        16        |        16
+ 21|        64        |        32        |        16        |        16
+[PASS] All 22 channels produced exactly expected coefficient rates!
+
+[TEST 2] Testing channel isolation & crosstalk...
+[PASS] Zero crosstalk: Channels 1..21 completely isolated from Channel 0 impulse!
+
+[TEST 3] Testing saturation and overflow prevention...
+[PASS] Saturation logic verified: outputs clamped properly within [-32768, 32767]!
+
+================================================================================
+ ALL TESTS PASSED! Multi-level DWT cascade is 100% verified.
+================================================================================
+
+rtl/tb_dwt_db4.v:366: $finish called at 2168115000 (1ps)

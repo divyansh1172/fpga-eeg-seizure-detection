@@ -1,0 +1,15 @@
+ablation_type,param_name,param_value,sensitivity,fa_per_hour,median_latency_sec
+k_sweep,k,1,0.8823529411764706,2.520271481349702,1.0
+k_sweep,k,2,1.0,1.0738548050968295,2.0
+k_sweep,k,3,1.0,0.37256187115604295,3.0
+k_sweep,k,5,1.0,0.15340782929954708,5.0
+feature_set,feature_set,energy,1.0,1.2491780385820264,3.0
+feature_set,feature_set,linelength,1.0,0.32873106278474373,3.0
+feature_set,feature_set,all,1.0,0.37256187115604295,3.0
+feature_set,feature_set,log_energy,1.0,0.46022348789864126,3.0
+subbands,bands,baseline_no_D2,1.0,0.37256187115604295,3.0
+subbands,bands,with_D2,1.0,0.32873106278474373,3.0
+svm_c,C,0.01,1.0,0.5040542962699405,4.0
+svm_c,C,0.1,1.0,0.5040542962699405,3.0
+svm_c,C,1.0,1.0,0.37256187115604295,3.0
+svm_c,C,10.0,1.0,0.37256187115604295,3.0

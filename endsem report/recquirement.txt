@@ -1,0 +1,202 @@
+================================================================================
+EE2000 SIGNAL PROCESSING (FALL 2026) - IIT HYDERABAD
+ENDSEM / FINAL PHASE REQUIREMENTS FOR TEAM 15
+PROJECT: Real-Time EEG Seizure Detection on FPGA (DWT + Linear SVM)
+TARGET: RealDigital Boolean Board (Spartan-7 XC7S50)
+DEADLINE: 13 November 2026 (Final Report, Results, Code, Board Demo & Viva)
+================================================================================
+
+TABLE OF CONTENTS:
+1. Overview & Core Mission
+2. Software & Toolchain Requirements
+3. Hardware & Equipment Requirements
+4. Data & Repository Protocols (Strict Rules)
+5. Team Role Division (M1, M2, M3, M4)
+6. Deliverables & Milestone Schedule
+7. Definition of Done for Final Submission
+
+--------------------------------------------------------------------------------
+1. OVERVIEW & CORE MISSION
+--------------------------------------------------------------------------------
+In the mid-term phase (completed 27 Oct 2026), our team completed Stages 1 to 5:
+- Software baseline on CHB-MIT (17 seizures, 45.63 h control across 47 records).
+- 100.0% sensitivity, 0.373 FA/h, 3.0 s median latency, 82.6 dB SQNR (B=16).
+- Literature replication of Shoeb & Guttag (2010) (88.2%, 0.307 FA/h).
+- Four core synthesizable Verilog modules designed (dwt_db4, svm_classifier,
+  alarm_logic, uart_rx) with dwt_db4 bit-exact verified against hex vectors.
+
+In this FINAL ENDSEM PHASE (Nov 1 - Nov 13, 2026), the mission is:
+1. Complete the full Verilog RTL datapath (IIR biquad, feature accumulators,
+   7-segment controller, and top-level integration).
+2. Synthesize, implement, and close timing in AMD/Xilinx Vivado at 100 MHz.
+3. Stream EEG data from PC to Boolean Board over 230,400-baud UART and demonstrate
+   live hardware seizure alarm assertion (LEDs, RGB LED, 7-segment display).
+4. Conduct full-cohort fixed-point LORO re-evaluation in Python across all 47 records.
+5. Author the Final Report (IEEE CVF template) with post-implementation hardware
+   measurements, clear team work delineation (M1-M4), and defend in the viva.
+
+--------------------------------------------------------------------------------
+2. SOFTWARE & TOOLCHAIN REQUIREMENTS
+--------------------------------------------------------------------------------
+A. Python Environment:
+   - Python version: 3.10.x or 3.11.x (tested on 3.11.9)
+   - Mandatory pip packages:
+     numpy>=1.24.0, <2.4.0
+     scipy>=1.10.0
+     PyWavelets>=1.4.0
+     pyEDFlib>=0.1.30
+     scikit-learn>=1.2.0
+     pandas>=2.0.0
+     matplotlib>=3.7.0
+     pyserial>=3.5             <-- REQUIRED for UART streaming to FPGA board!
+     tabulate>=0.9.0
+   - Verification command:
+     python -c "import numpy, scipy, pywt, pyedflib, sklearn, pandas, matplotlib, serial; print('ALL PYTHON PACKAGES INSTALLED')"
+
+B. FPGA Design & Simulation Toolchain:
+   - AMD / Xilinx Vivado Design Suite:
+     - Version: 2020.2, 2022.2, 2023.1, or newer.
+     - Edition: Vivado ML Standard (Free Webpack - no paid license needed).
+     - Target Part: Spartan-7 XC7S50 (`xc7s50csga324-1` or `xc7s50csga342-1`).
+     - Tools utilized:
+       * Vivado Simulator (xsim) / Icarus Verilog (iverilog) + GTKWave.
+       * Vivado Synthesis & Implementation (place & route).
+       * Vivado Timing Analyzer (STA - 100 MHz constraint).
+       * Vivado Power Analyzer (XPA - total on-chip power in mW).
+       * Vivado Hardware Manager (bitstream programming).
+   - RealDigital Boolean Board Files:
+     Download and install Boolean Board definition into Vivado:
+     `Vivado/<version>/data/boards/board_files/`
+
+C. Report Compilation Toolchain:
+   - Tectonic (preferred, bundled in `bin/tectonic.exe`) or TeX Live / MikTeX:
+     - pdflatex, bibtex
+     - Template: IEEE CVF format (`report/cvpr.sty`, `report/refs.bib`).
+
+--------------------------------------------------------------------------------
+3. HARDWARE & EQUIPMENT REQUIREMENTS
+--------------------------------------------------------------------------------
+A. RealDigital Boolean Board:
+   - FPGA chip: AMD Spartan-7 XC7S50.
+   - 100 MHz onboard oscillator (Pin F14).
+   - Single Micro-USB cable connecting board JTAG/UART to PC.
+   - Onboard USB-UART bridge (CP2102N / FTDI) providing virtual COM port.
+   - Onboard peripherals used in demo:
+     * 16 slide switches: SW[1:0] configure alarm persistence k (1, 2, 3, 5).
+     * Pushbutton BTN0 (Pin J2): active-high synchronous system reset.
+     * LED15 (Pin A4): Seizure Alarm strobe / pulse indicator.
+     * RGB LED 0: Solid Green during normal streaming; Flashing Red on Seizure.
+     * Dual 4-digit 7-segment display (8 digits total): Displays active channel,
+       window counter, and latched seizure latency in seconds.
+
+B. Host PC & Connectivity:
+   - USB 2.0 / 3.0 port.
+   - Silicon Labs CP210x Universal Windows Driver installed (or FTDI driver).
+   - Verify COM port in Device Manager: e.g., `COM3`, `COM4`, or `/dev/ttyUSB0`.
+
+--------------------------------------------------------------------------------
+4. DATA & REPOSITORY PROTOCOLS (STRICT NON-NEGOTIABLE RULES)
+--------------------------------------------------------------------------------
+A. Course Rule 9 (Zero Raw Data Commit):
+   - NEVER commit `.edf` or `.npz` files to git.
+   - NEVER include `.edf` or `.npz` files in `mtr-15.zip` or `final-15.zip`.
+   - All raw data stays in `data/raw/` (ignored by `.gitignore`).
+
+B. Scientific Integrity (Zero Fabrication):
+   - Every single number, latency, FA/h, LUT count, or power value in the report
+     MUST be produced by an automated script or Vivado report saved in `results/`.
+   - Never copy numbers from memory or hallucinate hardware utilization.
+
+C. Append-Only Work Log (`process.md`):
+   - Every teammate MUST log work in `process.md`.
+   - NEVER delete, rewrite, or overwrite past entries.
+   - Maintain the Status Board, Decisions Log, and AI-Usage Ledger.
+
+D. Code Header Standards:
+   Every source file (`.py`, `.v`, `.tcl`, `.sh`) MUST start with:
+   /*
+    * Author: <Team Member Name (M1/M2/M3/M4) or "AI-assisted, reviewed by <Name>">
+    * Purpose: <Concise explanation of function>
+    * AI-assisted: yes/no
+    */
+
+--------------------------------------------------------------------------------
+5. TEAM ROLE DIVISION (MANDATORY RUBRIC DELINEATION)
+--------------------------------------------------------------------------------
+Per the course flier: "The work done by each team member must be clearly delineated
+and the code written by each team member must be appropriately commented."
+
+- MEMBER 1 (M1) - Data Engineering & Host Demo Lead:
+  * Owner: CHB-MIT record parsing, manifest, and test vector extraction.
+  * Develops `scripts/stream_eeg_uart.py` host Python streaming harness.
+  * Validates UART packet protocol (0xAA header, 22 channels, Q1.15 data).
+  * Measures end-to-end software vs hardware latency during board playback.
+
+- MEMBER 2 (M2) - Signal Processing & Fixed-Point Verification Lead:
+  * Owner: Causal IIR filter math, db4 DWT, and linear SVM training.
+  * Conducts full-cohort fixed-point LORO re-evaluation in `src/fixedpoint.py`.
+  * Generates `results/fixedpoint_loro_comparison.csv` proving B=16 parity.
+  * Prepares mathematical derivations for viva defense (SQNR, group delay, shifts).
+
+- MEMBER 3 (M3) - FPGA RTL Architecture & DSP48E1 Specialist:
+  * Owner: Verilog RTL datapath modules in `rtl/`.
+  * Implements `rtl/iir_biquad.v` and `rtl/feature_accumulator.v`.
+  * Implements dynamic range wire-shifting for 38-bit Energy into DSP48E1.
+  * Verifies cycle-accurate behavior via RTL testbenches (`tb_*.v`).
+
+- MEMBER 4 (M4) - Vivado Synthesis, Implementation & Demo Lead:
+  * Owner: Vivado project, pin constraints (`rtl/boolean_board.xdc`), and Tcl flow.
+  * Closes timing at 100 MHz (setup slack WNS > 0, hold slack WHS > 0).
+  * Generates bitstream (`top_seizure_detector.bit`) and programs Boolean Board.
+  * Runs Vivado Power Analyzer (XPA) and extracts post-implementation LUT/BRAM/DSP.
+  * Authors 7-segment display and LED controller (`rtl/seven_seg_controller.v`).
+
+--------------------------------------------------------------------------------
+6. DELIVERABLES & MILESTONE SCHEDULE
+--------------------------------------------------------------------------------
+- STAGE 6 (Nov 1 - Nov 5): RTL Completion & Vivado Timing Closure
+  * Finish all Verilog RTL modules and top-level wiring.
+  * Run batch synthesis via `scripts/run_vivado_synth.tcl`.
+  * Verify 100 MHz timing closure and extract hardware resource numbers.
+
+- STAGE 7 (Nov 6 - Nov 8): Physical Boolean Board Playback Demo
+  * Program bitstream to RealDigital Boolean Board via Vivado Hardware Manager.
+  * Connect host PC via micro-USB and execute `scripts/stream_eeg_uart.py`.
+  * Verify LED strobe, RGB status, and 7-segment display on seizure onset.
+  * Record demo video (2-3 minutes) and screenshot terminal outputs.
+
+- STAGE 8 (Nov 9 - Nov 10): Full-Cohort Quantization LORO Validation
+  * Run bit-exact Q1.15 LORO evaluation across all 47 records.
+  * Confirm 100.0% sensitivity, 0.373 FA/h, and 3.0 s median latency.
+  * Generate comparison tables for the final report.
+
+- STAGE 9 (Nov 11 - Nov 13, 2026): Final Report & Code Freeze
+  * Draft Final Report (`report/final-15.tex`) using IEEE CVF conference format.
+  * Compile `final-15.pdf` with Tectonic; check for zero unresolved references.
+  * Update Table 8 & Table 10 with measured Vivado utilization and power.
+  * Add Team Work Delineation section mapping M1-M4 to student names/roll numbers.
+  * Package clean submission archive `final-15.zip` using packaging script.
+  * Run automated audit script `scripts/audit_final_submission.py`.
+  * Final submission upload by 13 November 2026, 23:59.
+
+- STAGE 10 (Date TBD): Board Presentation & Viva Defense
+  * Bring Boolean Board, laptop, and micro-USB cable to viva.
+  * Perform live playback of seizure clip (`chb01_03`) showing hardware alarm.
+  * Defend AI-usage ledger, filter group delay, and DSP48E1 bit-width math.
+
+--------------------------------------------------------------------------------
+7. DEFINITION OF DONE FOR FINAL SUBMISSION
+--------------------------------------------------------------------------------
+Before declaring the final project complete and submitting, ALL items must pass:
+[ ] 1. All synthesizable Verilog modules exist, compile, and pass simulation.
+[ ] 2. Vivado synthesis and implementation complete with ZERO timing violations (WNS > 0).
+[ ] 3. Top-level bitstream generated and verified on physical Boolean Board.
+[ ] 4. Host Python UART streaming harness successfully triggers board alarm on seizure.
+[ ] 5. Full-cohort fixed-point LORO re-evaluation completed with results table in CSV.
+[ ] 6. Final report compiled to `final-15.pdf` with zero "[?]" or broken references.
+[ ] 7. Table 8 and Table 10 report measured post-implementation FPGA utilization and power.
+[ ] 8. Team member contributions explicitly delineated by name, roll number, and module.
+[ ] 9. AI usage ledger up to date in report and `process.md`.
+[ ] 10. `final-15.zip` contains zero `.edf` / `.npz` files (Course Rule 9 verified).
+[ ] 11. Automated audit script passes with 100% green status.
+================================================================================

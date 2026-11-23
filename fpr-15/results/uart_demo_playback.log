@@ -1,0 +1,25 @@
+
+[INIT] Connecting to Boolean Board on COM3 at 230400 baud...
+[STREAM] Streaming 8960 frames (35.0 s) across 22 channels at 256.0 Hz...
+[INFO] Ground-truth clinical seizure onset scheduled at t = 25.0 s.
+
+  Playback t =   0.0 s | Elapsed:   0.0 s | State: Normal Background
+  Playback t =   5.0 s | Elapsed:   5.1 s | State: Normal Background
+  Playback t =  10.0 s | Elapsed:  10.2 s | State: Normal Background
+  Playback t =  15.0 s | Elapsed:  15.3 s | State: Normal Background
+  Playback t =  20.0 s | Elapsed:  20.4 s | State: Normal Background
+  Playback t =  25.0 s | Elapsed:  25.5 s | State: SEIZURE ACTIVE
+
+>>> [MOCK BOARD SEIZURE ALARM ASSERTED]
+    Board Alarm Time : t = 28.250 s
+    Clinical Onset   : t = 25.000 s
+    Measured Latency : tau = 3.250 s (with 0.25 s DWT group delay)
+
+  Playback t =  30.0 s | Elapsed:  30.6 s | State: SEIZURE ACTIVE
+
+==============================================================================
+STREAMING DEMONSTRATION SUMMARY
+Total Streamed Duration : 35.00 s
+Seizure Detected        : YES (SUCCESS)
+Detection Latency (tau) : 3.250 s
+==============================================================================

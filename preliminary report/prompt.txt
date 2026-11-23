@@ -1,0 +1,1067 @@
+I am preparing the **preliminary project report** for my EE2000: Signal Processing course project at IIT Hyderabad.
+
+My proposed project is:
+
+**“Real-Time EEG Seizure Detection Using Discrete Wavelet Transform and Support Vector Machine on FPGA”**
+
+The target hardware is **definitely the Boolean Board based on a Spartan-7 FPGA**.
+
+I want you to act simultaneously as:
+
+1. A research-oriented signal-processing engineer.
+2. An FPGA/Digital Signal Processing expert.
+3. A rigorous academic literature reviewer.
+4. An IEEE/CVF-style technical paper writer.
+5. A LaTeX expert.
+
+Your job is to produce a **high-quality preliminary project report in LaTeX**, based on verified literature and the project information below.
+
+---
+
+# 1. COURSE REQUIREMENTS
+
+The course project instructions state that the preliminary report must contain:
+
+- A clearly identified problem statement.
+- A summary/review of the related literature.
+- The report should follow the **standard IEEE CVF Conference template**.
+- The professor has separately instructed us to use the **review option on line 8 of the LaTeX template**.
+- There is **NO PAGE LIMIT for our submission**. Ignore any 8-page limit appearing in generic paper/template instructions.
+- This is only the **preliminary report**, so do NOT present our own experimental results as though they already exist.
+
+The report should specifically contain:
+
+1. Title
+2. Abstract
+3. Introduction
+4. Literature Review
+5. Next Steps
+
+You may add other small sections/subsections only when they substantially improve the preliminary report. Do not add unnecessary sections just to increase length.
+
+---
+
+# 2. IMPORTANT: LATEX FORMAT
+
+I am **NOT going to upload the IEEE/CVF LaTeX template**.
+
+Therefore, construct the document using the appropriate standard **CVF/CVPR-style LaTeX template structure** yourself.
+
+Use the **review configuration/option exactly as requested by the professor**. In the standard CVF template this is associated with the review option in the document class.
+
+Do NOT switch to IEEEtran merely because this is an EE course.
+
+The resulting LaTeX should be directly compilable with the standard CVF/CVPR LaTeX setup.
+
+Do not arbitrarily redesign the template.
+
+Preserve normal CVF conventions for:
+
+- title
+- author block
+- abstract
+- section headings
+- equations
+- figures/tables if used
+- references
+- bibliography formatting
+- review mode
+
+There is no page limit, so do not artificially shorten the paper to 6/8 pages.
+
+At the same time, do not pad the report with meaningless text.
+
+---
+
+# 3. PROJECT BACKGROUND
+
+The project is an FPGA implementation of an EEG seizure detector.
+
+The overall concept is:
+
+EEG signal
+→ windowing
+→ preprocessing/filtering
+→ Discrete Wavelet Transform
+→ wavelet-domain feature extraction
+→ machine-learning classifier
+→ post-processing
+→ seizure alarm
+
+The intended classifier is primarily a **Support Vector Machine (SVM)**.
+
+The intended wavelet transform is primarily a **Daubechies-4 (db4) DWT**, because this is commonly used in EEG processing and appears repeatedly in the relevant literature.
+
+However, **NONE of the following implementation details are finalized yet**:
+
+- number of EEG channels
+- exact channel-selection strategy
+- window duration
+- overlap
+- filter design
+- exact passband
+- DWT decomposition level
+- exact feature set
+- exact classifier configuration
+- patient-specific vs cross-patient evaluation protocol
+- fixed-point word length
+- FPGA parallelism/time multiplexing architecture
+- exact post-processing rule
+
+Therefore:
+
+**DO NOT write these decisions as finalized facts about our implementation.**
+
+Instead, discuss them as **candidate design choices / proposed directions / decisions to be finalized after literature review and preliminary experimentation**.
+
+This distinction is extremely important.
+
+---
+
+# 4. DATASET
+
+The primary dataset under consideration is:
+
+**CHB-MIT Scalp EEG Database**
+
+The dataset is hosted by **PhysioNet**.
+
+The project description I currently have states approximately:
+
+- EEG recordings from pediatric subjects with intractable seizures.
+- Sampling frequency of 256 Hz.
+- 16-bit resolution.
+- Multiple EEG channels.
+- Seizure annotations provided by clinical experts.
+- Multiple EDF recordings.
+- Channel configurations are not perfectly identical across all recordings.
+
+However, YOU MUST VERIFY EVERY DATASET FACT FROM THE OFFICIAL PHYSIONET/DATASET SOURCE before putting numerical claims into the report.
+
+Do not blindly trust the numbers above.
+
+Where appropriate, cite the original dataset paper and the official PhysioNet database documentation.
+
+Discuss the practical issue of changing channel configurations across recordings and explain why channel selection/standardization is an important early project decision.
+
+Do not imply that all recordings have exactly the same montage if the official documentation does not support that claim.
+
+---
+
+# 5. SIGNAL-PROCESSING APPROACH
+
+The conceptual processing chain is:
+
+### Windowing
+Divide the continuous EEG stream into short windows/epochs.
+
+### Preprocessing
+Potential preprocessing may include:
+
+- band-limiting/filtering
+- removal of undesirable frequency components
+- normalization/scaling
+
+Do not assume a particular filter without literature support.
+
+### DWT
+Apply a multi-level discrete wavelet transform, likely using **Daubechies-4**.
+
+Explain why wavelets are particularly appropriate for EEG seizure detection:
+
+- EEG is nonstationary.
+- Seizure activity can have transient spectral characteristics.
+- DWT provides time-frequency localization.
+- Different decomposition levels provide information in different frequency ranges.
+
+Be technically accurate about the fact that DWT subbands are only approximate frequency partitions and depend on sampling rate and decomposition level.
+
+Do NOT claim that the DWT bands exactly equal clinical delta/theta/alpha/beta bands unless a specific decomposition and sampling rate make that approximation valid.
+
+### Feature extraction
+
+Potential statistical features include:
+
+- energy
+- variance
+- standard deviation
+- entropy or other wavelet-domain statistics where supported by the literature
+
+Again, these are **candidate features**, not finalized implementation choices.
+
+### Classification
+
+The primary intended classifier is a **linear SVM**, because a linear SVM can be implemented in hardware using:
+
+- feature-vector dot product
+- stored weights
+- bias
+- threshold/sign decision
+
+Explain why a linear classifier is attractive for FPGA deployment in terms of computational simplicity and deterministic inference.
+
+A small MLP may be mentioned as an alternative only when useful, but SVM should remain the primary proposed classifier.
+
+### Post-processing
+
+A proposed alarm mechanism may require multiple consecutive seizure-positive windows before asserting an alarm.
+
+Explain this as a method for reducing isolated false positives.
+
+Again, the exact number of consecutive windows is not finalized.
+
+---
+
+# 6. FPGA MOTIVATION
+
+This section is very important.
+
+Do NOT make the weak argument:
+
+“EEG seizure detection requires an FPGA because a microcontroller cannot process it.”
+
+That is not necessarily true.
+
+At 256 Hz, a single EEG channel is computationally manageable for a conventional microcontroller.
+
+Instead, discuss the FPGA motivation honestly:
+
+- simultaneous or highly parallel processing of multiple EEG channels
+- streaming signal processing
+- deterministic low-latency processing
+- pipelined FIR filtering
+- pipelined DWT filter banks
+- parallel feature extraction
+- efficient multiply-accumulate operations
+- hardware implementation of the classifier
+- deterministic real-time inference
+- potential energy/latency advantages for larger channel counts
+
+Make clear that the **engineering value of FPGA implementation becomes more compelling when processing multiple channels and maintaining a streaming architecture**, rather than claiming that FPGA hardware is inherently necessary for the basic algorithm.
+
+This point should make the report stronger during a viva.
+
+---
+
+# 7. LITERATURE REVIEW REQUIREMENTS
+
+Conduct a serious literature review before writing.
+
+You MUST browse the internet and verify sources.
+
+Use **official/high-authority sources only**, such as:
+
+- IEEE Xplore
+- ScienceDirect / Elsevier
+- Springer
+- ACM Digital Library
+- PubMed / NLM where appropriate
+- PhysioNet
+- official journal/publisher pages
+- official conference proceedings
+- original peer-reviewed papers
+
+Do NOT use:
+
+- random blogs
+- Medium
+- Wikipedia
+- ResearchGate as the primary citation
+- generic article-summary websites
+- SEO websites
+- AI-generated references
+- citation aggregators as authoritative sources
+
+Search broadly enough to identify the major relevant works, then verify the final citations using the publisher/original source.
+
+---
+
+# 8. PAPERS/WORKS THAT SHOULD BE INVESTIGATED
+
+The following works were identified during preliminary research, but **none should be cited blindly**.
+
+Verify whether they actually exist, obtain the exact bibliographic details, and determine exactly what each paper reports.
+
+### A. Shoeb et al.
+The classic seizure-detection work associated with the CHB-MIT dataset and early machine-learning-based seizure detection.
+
+Investigate:
+
+- exact paper title
+- authors
+- year
+- venue
+- dataset
+- methodology
+- sensitivity
+- detection latency
+- experimental protocol
+
+Do not misattribute results.
+
+---
+
+### B. EEG seizure detection using DWT + machine learning
+A paper described as:
+
+**“An EEG based real-time epilepsy seizure detection approach using DWT and machine learning”**
+
+Reported to be in *Biomedical Signal Processing and Control* (2022).
+
+Verify:
+
+- exact title
+- exact authors
+- DOI
+- dataset
+- preprocessing
+- wavelet
+- features
+- classifier
+- evaluation protocol
+- reported accuracy
+- sensitivity
+- false-positive/false-detection metric
+
+Do not copy headline numbers without checking the experimental setup.
+
+---
+
+### C. FPGA DWT + statistical features + neural network paper
+A paper reportedly published in *Applied Soft Computing* around 2025 describing an FPGA implementation involving:
+
+- DWT
+- statistical features
+- feed-forward neural network
+- seizure signals
+
+Verify the exact paper.
+
+Determine:
+
+- hardware platform
+- architecture
+- dataset
+- number of channels
+- features
+- classifier
+- FPGA resources
+- latency
+- accuracy/sensitivity/etc.
+
+Only include it if the paper can be independently verified.
+
+---
+
+### D. Hardware seizure detector using FFT features + SVM
+A paper reportedly associated with results approximately like:
+
+- 98.4% sensitivity
+- 6 s mean detection latency
+- 0.356 false detections/hour
+
+Verify the original paper rather than citing a secondary paper.
+
+Determine:
+
+- exact authors
+- title
+- publication
+- hardware
+- features
+- classifier
+- dataset
+- evaluation methodology
+- exact interpretation of those metrics
+
+Do NOT repeat these numbers unless the original source confirms them.
+
+---
+
+### E. 65-nm low-power EEG processor
+A paper reportedly describing:
+
+- lifting-based wavelet processing
+- parallel SVM
+- approximately 0.448 mW
+- 65 nm technology
+
+It is an **ASIC rather than FPGA**.
+
+Investigate it primarily for architectural ideas:
+
+- lifting wavelet architecture
+- parallelism
+- SVM hardware organization
+- memory/weight storage
+- low-power considerations
+
+Clearly label it as ASIC work and do not present it as an FPGA implementation.
+
+---
+
+### F. IET Circuits, Devices & Systems FPGA work
+Investigate the reported FPGA architecture involving:
+
+- Daubechies-4 DWT
+- systolic-array linear SVM
+
+This may be one of the closest architectural references to our intended project.
+
+Verify:
+
+- exact paper
+- authors
+- year
+- FPGA/device
+- DWT implementation
+- SVM architecture
+- resource utilization
+- throughput/latency
+- classification results
+- dataset
+
+Explain specifically how it relates to our proposed architecture.
+
+---
+
+# 9. DO NOT FABRICATE RESULTS
+
+This is one of the most important requirements.
+
+The preliminary report is a **proposal/research plan**, not a final results paper.
+
+Do NOT invent:
+
+- FPGA resource utilization
+- LUT counts
+- DSP usage
+- BRAM usage
+- timing
+- power
+- accuracy
+- sensitivity
+- specificity
+- false detections/hour
+- latency
+- precision/recall
+- F1-score
+- bit-exact agreement
+- hardware speedup
+- anything that we have not actually measured
+
+You MAY report numbers from published papers, but clearly attribute them to those papers.
+
+Use language such as:
+
+- “The cited work reports…”
+- “In their evaluation…”
+- “The authors obtained…”
+- “This project will evaluate…”
+- “We propose to investigate…”
+- “The exact configuration will be finalized after…”
+
+Never make published results sound like our own results.
+
+---
+
+# 10. PATIENT-WISE VS CROSS-PATIENT EVALUATION
+
+This must receive explicit attention in the report.
+
+Explain that seizure-detection performance can depend strongly on the evaluation protocol.
+
+Discuss the distinction between:
+
+- patient-specific training/testing
+- cross-patient/generalized evaluation
+
+Explain why comparing results from papers without checking their train/test protocol can be misleading.
+
+Our evaluation protocol is currently **not finalized**.
+
+Recommend a defensible methodology for this project, but frame it as a proposal to be finalized after the initial dataset and literature analysis.
+
+Do not claim that one protocol has already been adopted.
+
+---
+
+# 11. CLASS IMBALANCE
+
+Discuss the severe class imbalance inherent in seizure detection.
+
+Most EEG recording time is non-seizure, while seizure windows constitute a very small fraction.
+
+Explain why raw accuracy can therefore be misleading.
+
+The report should motivate metrics such as:
+
+- sensitivity
+- false detections per hour / false alarms per hour
+- detection latency
+
+Additional metrics may be mentioned where appropriate.
+
+Make the distinction between **false-positive rate** and **false detections per hour** clear rather than treating them as interchangeable.
+
+---
+
+# 12. HARDWARE/SYSTEM ARCHITECTURE DISCUSSION
+
+Include a concise proposed architecture, but clearly label it as a **planned architecture**.
+
+Something along the lines of:
+
+PC / dataset playback
+→ UART or onboard storage
+→ EEG sample stream
+→ preprocessing/filter
+→ DWT filter bank
+→ feature extraction
+→ SVM inference
+→ temporal post-processing
+→ LED/7-segment/display alarm
+
+Discuss possible ways the Boolean Board could receive playback data.
+
+Do not claim that the UART architecture has already been implemented.
+
+Mention that the real EEG front-end is not part of the initial scope.
+
+Explain that an offline EEG dataset will be streamed to the FPGA to emulate a real-time input stream.
+
+---
+
+# 13. REAL-TIME DEMONSTRATION
+
+The final project is intended to demonstrate real-time processing on the Boolean Board.
+
+The report can propose that preselected EEG segments will be:
+
+- converted offline into a hardware-friendly representation
+- streamed from a PC to the FPGA
+- processed sample-by-sample
+- classified in real time
+- followed by a visible seizure/no-seizure indication
+
+Make clear that this is a **dataset playback demonstration**, not a medically validated clinical device.
+
+Avoid medical claims such as “this device can safely diagnose epilepsy.”
+
+---
+
+# 14. LITERATURE REVIEW STRUCTURE
+
+Make the literature review analytical, not merely a list of papers.
+
+A good structure would be approximately:
+
+### 4.1 Conventional and machine-learning EEG seizure detection
+Briefly establish the problem and classical approaches.
+
+### 4.2 Wavelet-based seizure detection
+Explain why DWT is widely used for nonstationary EEG.
+
+### 4.3 Feature extraction and statistical descriptors
+Discuss energy, variance, standard deviation, entropy, etc.
+
+### 4.4 Machine-learning classifiers
+Discuss SVM and other approaches, with emphasis on why SVM is attractive for hardware.
+
+### 4.5 FPGA/ASIC implementations
+Focus specifically on hardware realization of DWT, feature extraction and classifiers.
+
+### 4.6 Comparison and project motivation
+Explain what the literature establishes and where our proposed implementation fits.
+
+Do not manufacture a “research gap” merely for the sake of novelty.
+
+It is acceptable to state that our project is an **engineering-oriented replication/integration effort** whose contribution is implementing and demonstrating a literature-grounded pipeline on the Boolean Board.
+
+---
+
+# 15. PROJECT NOVELTY / CONTRIBUTION
+
+Do NOT oversell novelty.
+
+Existing FPGA/ASIC seizure-detection systems already exist.
+
+Present our project honestly as something like:
+
+- implementation-oriented
+- reproducible
+- FPGA-based
+- streaming
+- focused on DWT + feature extraction + linear SVM
+- evaluated against an established benchmark
+- validated against a Python reference model
+- demonstrated on a Spartan-7 Boolean Board
+
+The value can come from system integration, hardware implementation, reproducibility, real-time streaming, resource analysis, and comparison with published work.
+
+Do not claim “first”, “novel”, “state-of-the-art”, or similar unless the literature review genuinely establishes it.
+
+---
+
+# 16. INTRODUCTION
+
+Write a strong undergraduate EE signal-processing introduction.
+
+It should move logically from:
+
+1. EEG as a biomedical signal.
+2. Seizure detection as a signal-processing problem.
+3. Why automated detection matters technically.
+4. Challenges of EEG:
+   - nonstationarity
+   - noise
+   - transient patterns
+   - inter-patient variability
+5. Why time-frequency analysis is useful.
+6. Why DWT is attractive.
+7. Why machine learning can classify extracted features.
+8. Why an FPGA implementation is interesting.
+9. Why the Boolean Board is the target platform.
+10. What this project proposes to implement.
+11. What will be evaluated.
+
+Avoid generic medical exposition.
+
+The emphasis should remain on **signal processing and hardware implementation**.
+
+---
+
+# 17. ABSTRACT
+
+The abstract should be concise but technically meaningful.
+
+It should state:
+
+- the problem
+- the dataset
+- the proposed DWT + SVM approach
+- the FPGA implementation target
+- the real-time streaming idea
+- the intended evaluation
+- the fact that this is a proposed project and experimental hardware results are not yet available
+
+Do not include fabricated performance numbers.
+
+---
+
+# 18. PROBLEM STATEMENT
+
+Clearly identify the problem.
+
+The paper should explicitly state something close in meaning to:
+
+The project aims to develop and implement a real-time FPGA-based EEG seizure-detection pipeline that transforms streaming EEG samples into wavelet-domain features and performs hardware-based SVM classification, while studying the trade-offs among detection performance, computational complexity, latency, and FPGA resource utilization.
+
+Rewrite this into polished academic prose rather than copying it literally.
+
+---
+
+# 19. NEXT STEPS
+
+The final section should be concrete and technically useful.
+
+Discuss a staged plan such as:
+
+### Dataset preparation
+- obtain CHB-MIT dataset
+- inspect channel configurations
+- determine usable channels
+- parse EDF files
+- extract seizure intervals
+- construct labeled windows
+
+### Software baseline
+- implement Python preprocessing
+- implement DWT
+- extract candidate features
+- train SVM
+- define evaluation protocol
+- validate on selected subjects
+
+### Reproducibility/reference model
+- establish floating-point reference implementation
+- determine fixed-point representation
+- quantify numerical error
+- define expected hardware outputs
+
+### FPGA design
+- implement filters
+- implement DWT
+- implement feature extraction
+- implement SVM
+- implement post-processing
+- integrate streaming interface
+
+### Verification
+- compare Verilog against Python
+- perform bit-exact/fixed-point validation
+- measure latency
+- measure throughput
+- measure FPGA resources
+- test representative seizure/non-seizure segments
+
+### Final demonstration
+- PC-to-FPGA dataset streaming
+- live classification
+- LED/7-segment/display indication
+
+You may organize this as a table if it improves readability.
+
+---
+
+# 20. SOURCES AND CITATIONS
+
+Every substantive factual claim should have an appropriate citation.
+
+Especially verify citations for:
+
+- CHB-MIT dataset
+- dataset statistics
+- EEG seizure characteristics
+- DWT applications
+- SVM methodology where discussed specifically in literature
+- published seizure-detection performance
+- FPGA implementations
+- ASIC implementations
+- hardware resource/latency/power results
+- published performance numbers
+
+Use IEEE-style numbered citations:
+
+[1], [2], [3], ...
+
+Make sure every citation actually corresponds to the reference.
+
+Do not cite a paper for a claim that the paper does not support.
+
+---
+
+# 21. REFERENCE QUALITY CONTROL
+
+Before producing the final files, perform a citation audit.
+
+For every reference check:
+
+1. Does the paper actually exist?
+2. Is the title exact?
+3. Are the authors correct?
+4. Is the year correct?
+5. Is the venue correct?
+6. Is the DOI correct where available?
+7. Does the cited paper actually support the statement?
+8. Are reported numerical results copied accurately?
+9. Is the citation primary/original rather than an unreliable secondary citation?
+10. Are there duplicate references?
+
+If there is uncertainty about a paper, remove it rather than fabricate or guess.
+
+Do not create “plausible-looking” references.
+
+---
+
+# 22. BIBLIOGRAPHY
+
+Create a **separate `.bib` file**.
+
+Do not bury the bibliography inside the main `.tex` file.
+
+Use clean BibTeX entries.
+
+Where possible include:
+
+- author
+- title
+- journal/conference
+- volume/issue
+- pages
+- year
+- DOI
+
+Do not invent missing bibliographic information.
+
+---
+
+# 23. AI USAGE SECTION
+
+I need a **small, clearly isolated section for AI usage** because the course instructions require disclosure of AI-generated material.
+
+This must be the **ONLY place in the report that discusses AI usage**.
+
+Do not mention AI in:
+
+- abstract
+- introduction
+- literature review
+- methodology discussion
+- conclusion/next steps
+- captions
+- footnotes
+- references
+- any other section
+
+Create a small section near the end of the preliminary report, titled something like:
+
+**AI Tool Usage**
+
+Use neutral wording explaining that generative AI tools were used for assistance with literature organization, drafting/editing, and/or LaTeX generation, while the team is responsible for verifying technical content, references, and final submission.
+
+Do NOT imply that AI performed experiments that were not performed.
+
+Put a very obvious LaTeX comment immediately before this section, such as:
+
+`% ============================================================`
+`% AI USAGE DISCLOSURE — EDIT THIS SECTION BEFORE SUBMISSION`
+`% ============================================================`
+
+I need to be able to find and edit this section easily.
+
+This should be the **only AI disclosure section**.
+
+---
+
+# 24. AUTHORS
+
+Do not invent my team members.
+
+Use placeholders:
+
+Author 1  
+Department of Electrical Engineering  
+Indian Institute of Technology Hyderabad  
+<email>
+
+Author 2  
+...
+
+Author 3  
+...
+
+Author 4  
+...
+
+I will replace these myself.
+
+---
+
+# 25. WRITING QUALITY
+
+The writing should sound like a technically strong undergraduate EE project proposal.
+
+Target style:
+
+- precise
+- academic
+- technically rigorous
+- readable
+- confident but not exaggerated
+- evidence-based
+- engineering-focused
+
+Avoid:
+
+- excessive buzzwords
+- exaggerated novelty
+- generic filler
+- marketing language
+- unsupported medical claims
+- unsupported FPGA superiority claims
+- excessive discussion of clinical medicine
+- fake certainty
+
+Use equations where they genuinely improve technical clarity, e.g. for:
+
+- DWT/filter-bank formulation
+- feature definitions
+- linear SVM decision function
+
+Do not add equations merely for appearance.
+
+---
+
+# 26. TABLES
+
+Use tables where they provide genuine value.
+
+At minimum, consider a literature comparison table covering relevant papers with columns such as:
+
+- Reference
+- Dataset
+- Signal channels
+- Signal-processing method
+- Features
+- Classifier
+- Hardware platform
+- Evaluation protocol
+- Key reported metric(s)
+- Relevance to our project
+
+Make sure every entry is verified.
+
+Do not fill unavailable fields with guesses.
+
+Use “Not reported” where appropriate.
+
+A second table comparing candidate project decisions may be useful, but only if it genuinely helps.
+
+---
+
+# 27. FIGURES
+
+A conceptual block diagram of the proposed system would be useful.
+
+However, do not create fake experimental plots.
+
+If a diagram is included in the LaTeX:
+
+- make it clearly a conceptual/proposed architecture
+- do not imply that it represents completed hardware
+- use TikZ only if practical
+- otherwise provide a clean placeholder/comment explaining where a team-created figure can later be inserted
+
+Do not fabricate EEG waveforms or performance graphs.
+
+---
+
+# 28. IMPORTANT DISTINCTION BETWEEN FACTS AND PROPOSALS
+
+Throughout the document, explicitly distinguish among:
+
+### Published facts
+Supported by literature.
+
+### Dataset facts
+Supported by PhysioNet/original dataset documentation.
+
+### Proposed design choices
+Our current project plan.
+
+### Future experiments
+Things we intend to measure.
+
+### Completed results
+Only include these if I explicitly provide them.
+
+At present, there are **NO completed project experiments to report**.
+
+---
+
+# 29. FINAL SELF-CHECK BEFORE OUTPUT
+
+Before generating the files, internally perform these checks:
+
+### Technical
+- DWT explanation correct?
+- db4 correctly described?
+- frequency-band interpretation technically defensible?
+- SVM equation correct?
+- FPGA architecture realistic?
+- streaming terminology correct?
+- patient-wise/cross-patient distinction correct?
+- class imbalance discussion correct?
+
+### Research
+- every reference verified?
+- no fabricated DOI?
+- no fabricated paper?
+- no fabricated metric?
+- no unsupported dataset statistics?
+- published results correctly attributed?
+
+### LaTeX
+- document compiles?
+- CVF format?
+- review option enabled?
+- bibliography works?
+- no missing citations?
+- no undefined references?
+- no invented package dependencies that would make compilation unnecessarily difficult?
+
+### Academic
+- preliminary-report scope maintained?
+- no fake experimental results?
+- no overclaiming novelty?
+- problem statement clearly identified?
+- next steps clearly specified?
+- AI disclosure appears exactly once?
+
+---
+
+# 30. REQUIRED OUTPUT FILES
+
+Produce the project report as **separate files**, not as one combined text dump.
+
+At minimum produce:
+
+1. `main.tex`
+   - complete LaTeX source
+   - directly usable after replacing author placeholders
+
+2. `references.bib`
+   - all bibliography entries
+
+Optionally produce:
+
+3. `README.txt`
+   - brief compilation instructions and a list of what the team should replace/edit before submission
+
+Do NOT place all three into one file.
+
+---
+
+# 31. VERY IMPORTANT: DO NOT STOP AT A DRAFT
+
+I do not want a vague outline.
+
+I want a **complete preliminary paper**, including:
+
+- final proposed title
+- complete abstract
+- complete introduction
+- clearly stated problem
+- substantial literature review
+- literature comparison
+- proposed system architecture
+- next steps
+- verified references
+- bibliography
+- isolated AI disclosure section
+- CVF review-format LaTeX
+
+The report should be polished enough that I can compile it immediately and then make minor edits for my team's names/details.
+
+---
+
+# 32. FINAL TITLE
+
+Use this title unless your literature review strongly suggests a technically more precise title:
+
+**Real-Time EEG Seizure Detection Using Discrete Wavelet Transform and Support Vector Machine on FPGA**
+
+A slightly more hardware-oriented alternative may also be considered:
+
+**FPGA-Based Real-Time EEG Seizure Detection Using Discrete Wavelet Features and Support Vector Machine Classification**
+
+Choose whichever is academically more appropriate after reviewing the literature.
+
+Do not use a sensational or exaggerated title.
+
+---
+
+# 33. MOST IMPORTANT INSTRUCTION
+
+Do NOT simply turn the project description I supplied into prose.
+
+First:
+
+**research → verify → synthesize → write → citation-audit → LaTeX-audit**
+
+The literature review should demonstrate that you actually understand how existing EEG seizure detectors work and how FPGA implementations differ from software-only methods.
+
+Where the literature disagrees or uses different evaluation protocols, explicitly explain the difference rather than silently combining the results.
+
+The final paper should read like a serious **signal-processing + FPGA undergraduate research proposal**, not an AI-generated generic report.

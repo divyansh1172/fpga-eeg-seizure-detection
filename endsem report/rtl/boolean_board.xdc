@@ -1,0 +1,106 @@
+## ==============================================================================
+## EE2000 Signal Processing (Fall 2026) - Team 15
+## RealDigital Boolean Board Master XDC Constraints File
+## Target Device: AMD Spartan-7 XC7S50 (xc7s50csga324-1)
+## Verified against official RealDigital Boolean Board reference pinout.
+## ==============================================================================
+
+## -----------------------------------------------------------------------------
+## 1. System Clock (100 MHz Onboard MEMS Oscillator)
+## -----------------------------------------------------------------------------
+set_property -dict { PACKAGE_PIN F14 IOSTANDARD LVCMOS33 } [get_ports { clk }]
+create_clock -period 10.000 -name sys_clk_pin -waveform {0.000 5.000} -add [get_ports { clk }]
+
+## -----------------------------------------------------------------------------
+## 2. Pushbuttons (Active-High)
+## -----------------------------------------------------------------------------
+set_property -dict { PACKAGE_PIN J2  IOSTANDARD LVCMOS33 } [get_ports { rst }]
+set_property -dict { PACKAGE_PIN J5  IOSTANDARD LVCMOS33 } [get_ports { btn[1] }]
+set_property -dict { PACKAGE_PIN H2  IOSTANDARD LVCMOS33 } [get_ports { btn[2] }]
+set_property -dict { PACKAGE_PIN J1  IOSTANDARD LVCMOS33 } [get_ports { btn[3] }]
+
+## -----------------------------------------------------------------------------
+## 3. USB-UART Bridge (Silicon Labs CP2102N)
+## -----------------------------------------------------------------------------
+set_property -dict { PACKAGE_PIN V15 IOSTANDARD LVCMOS33 } [get_ports { uart_rxd }]
+set_property -dict { PACKAGE_PIN W15 IOSTANDARD LVCMOS33 } [get_ports { uart_txd }]
+
+## -----------------------------------------------------------------------------
+## 4. Slide Switches (sw[15:0])
+## -----------------------------------------------------------------------------
+set_property -dict { PACKAGE_PIN V2  IOSTANDARD LVCMOS33 } [get_ports { sw[0] }]
+set_property -dict { PACKAGE_PIN U2  IOSTANDARD LVCMOS33 } [get_ports { sw[1] }]
+set_property -dict { PACKAGE_PIN U1  IOSTANDARD LVCMOS33 } [get_ports { sw[2] }]
+set_property -dict { PACKAGE_PIN T2  IOSTANDARD LVCMOS33 } [get_ports { sw[3] }]
+set_property -dict { PACKAGE_PIN T1  IOSTANDARD LVCMOS33 } [get_ports { sw[4] }]
+set_property -dict { PACKAGE_PIN R2  IOSTANDARD LVCMOS33 } [get_ports { sw[5] }]
+set_property -dict { PACKAGE_PIN R1  IOSTANDARD LVCMOS33 } [get_ports { sw[6] }]
+set_property -dict { PACKAGE_PIN P2  IOSTANDARD LVCMOS33 } [get_ports { sw[7] }]
+set_property -dict { PACKAGE_PIN P1  IOSTANDARD LVCMOS33 } [get_ports { sw[8] }]
+set_property -dict { PACKAGE_PIN N2  IOSTANDARD LVCMOS33 } [get_ports { sw[9] }]
+set_property -dict { PACKAGE_PIN N1  IOSTANDARD LVCMOS33 } [get_ports { sw[10] }]
+set_property -dict { PACKAGE_PIN M2  IOSTANDARD LVCMOS33 } [get_ports { sw[11] }]
+set_property -dict { PACKAGE_PIN M1  IOSTANDARD LVCMOS33 } [get_ports { sw[12] }]
+set_property -dict { PACKAGE_PIN L1  IOSTANDARD LVCMOS33 } [get_ports { sw[13] }]
+set_property -dict { PACKAGE_PIN K2  IOSTANDARD LVCMOS33 } [get_ports { sw[14] }]
+set_property -dict { PACKAGE_PIN K1  IOSTANDARD LVCMOS33 } [get_ports { sw[15] }]
+
+## -----------------------------------------------------------------------------
+## 5. Discrete LEDs (led[15:0])
+## -----------------------------------------------------------------------------
+set_property -dict { PACKAGE_PIN G1  IOSTANDARD LVCMOS33 } [get_ports { led[0] }]
+set_property -dict { PACKAGE_PIN G2  IOSTANDARD LVCMOS33 } [get_ports { led[1] }]
+set_property -dict { PACKAGE_PIN F1  IOSTANDARD LVCMOS33 } [get_ports { led[2] }]
+set_property -dict { PACKAGE_PIN F2  IOSTANDARD LVCMOS33 } [get_ports { led[3] }]
+set_property -dict { PACKAGE_PIN E1  IOSTANDARD LVCMOS33 } [get_ports { led[4] }]
+set_property -dict { PACKAGE_PIN E2  IOSTANDARD LVCMOS33 } [get_ports { led[5] }]
+set_property -dict { PACKAGE_PIN E3  IOSTANDARD LVCMOS33 } [get_ports { led[6] }]
+set_property -dict { PACKAGE_PIN E5  IOSTANDARD LVCMOS33 } [get_ports { led[7] }]
+set_property -dict { PACKAGE_PIN E6  IOSTANDARD LVCMOS33 } [get_ports { led[8] }]
+set_property -dict { PACKAGE_PIN C3  IOSTANDARD LVCMOS33 } [get_ports { led[9] }]
+set_property -dict { PACKAGE_PIN B2  IOSTANDARD LVCMOS33 } [get_ports { led[10] }]
+set_property -dict { PACKAGE_PIN A2  IOSTANDARD LVCMOS33 } [get_ports { led[11] }]
+set_property -dict { PACKAGE_PIN B3  IOSTANDARD LVCMOS33 } [get_ports { led[12] }]
+set_property -dict { PACKAGE_PIN A3  IOSTANDARD LVCMOS33 } [get_ports { led[13] }]
+set_property -dict { PACKAGE_PIN B4  IOSTANDARD LVCMOS33 } [get_ports { led[14] }]
+set_property -dict { PACKAGE_PIN A4  IOSTANDARD LVCMOS33 } [get_ports { led[15] }]
+
+## -----------------------------------------------------------------------------
+## 6. RGB LED 0 (Status Indicator: Green = Normal Streaming, Red = Seizure Alarm)
+## -----------------------------------------------------------------------------
+set_property -dict { PACKAGE_PIN V6  IOSTANDARD LVCMOS33 } [get_ports { rgb0_r }]
+set_property -dict { PACKAGE_PIN U6  IOSTANDARD LVCMOS33 } [get_ports { rgb0_g }]
+set_property -dict { PACKAGE_PIN U7  IOSTANDARD LVCMOS33 } [get_ports { rgb0_b }]
+
+## -----------------------------------------------------------------------------
+## 7. Dual 4-Digit 7-Segment Display (8 Digits Total, Common-Anode)
+## -----------------------------------------------------------------------------
+# Display 0 (Right 4 digits, Anodes 0..3)
+set_property -dict { PACKAGE_PIN D5  IOSTANDARD LVCMOS33 } [get_ports { anode[0] }]
+set_property -dict { PACKAGE_PIN C4  IOSTANDARD LVCMOS33 } [get_ports { anode[1] }]
+set_property -dict { PACKAGE_PIN C7  IOSTANDARD LVCMOS33 } [get_ports { anode[2] }]
+set_property -dict { PACKAGE_PIN A8  IOSTANDARD LVCMOS33 } [get_ports { anode[3] }]
+
+# Display 1 (Left 4 digits, Anodes 4..7)
+set_property -dict { PACKAGE_PIN H3  IOSTANDARD LVCMOS33 } [get_ports { anode[4] }]
+set_property -dict { PACKAGE_PIN J4  IOSTANDARD LVCMOS33 } [get_ports { anode[5] }]
+set_property -dict { PACKAGE_PIN F3  IOSTANDARD LVCMOS33 } [get_ports { anode[6] }]
+set_property -dict { PACKAGE_PIN E4  IOSTANDARD LVCMOS33 } [get_ports { anode[7] }]
+
+# Cathodes (Segments A..G + DP, Active-Low)
+set_property -dict { PACKAGE_PIN D7  IOSTANDARD LVCMOS33 } [get_ports { seg[0] }]
+set_property -dict { PACKAGE_PIN C5  IOSTANDARD LVCMOS33 } [get_ports { seg[1] }]
+set_property -dict { PACKAGE_PIN A5  IOSTANDARD LVCMOS33 } [get_ports { seg[2] }]
+set_property -dict { PACKAGE_PIN B7  IOSTANDARD LVCMOS33 } [get_ports { seg[3] }]
+set_property -dict { PACKAGE_PIN A7  IOSTANDARD LVCMOS33 } [get_ports { seg[4] }]
+set_property -dict { PACKAGE_PIN D6  IOSTANDARD LVCMOS33 } [get_ports { seg[5] }]
+set_property -dict { PACKAGE_PIN B5  IOSTANDARD LVCMOS33 } [get_ports { seg[6] }]
+set_property -dict { PACKAGE_PIN A6  IOSTANDARD LVCMOS33 } [get_ports { dp }]
+
+## -----------------------------------------------------------------------------
+## 8. Configuration & Bitstream Settings
+## -----------------------------------------------------------------------------
+set_property CONFIG_VOLTAGE 3.3 [current_design]
+set_property CFGBVS VCCO [current_design]
+set_property BITSTREAM.CONFIG.CONFIGRATE 33 [current_design]
+set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]

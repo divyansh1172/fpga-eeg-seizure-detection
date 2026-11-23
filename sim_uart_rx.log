@@ -1,0 +1,17 @@
+================================================================
+ EE2000 TB_UART_RX: UART RX and Packet Framing Verification
+================================================================
+[TEST A] Streaming normal 22-channel frame sequence...
+[PASS] Test (a): Received all 22 valid channel frames without drops (count=22).
+[TEST B] Sending packet with 0xAA in payload bytes (sample = 0xAAAA)...
+[PASS] Test (b): Payload 0xAA correctly parsed as sample data (ch=3, data=0xaaaa).
+[TEST C] Injecting dropped byte mid-packet and testing re-lock within <= 2 packets...
+[PASS] Test (c): FSM re-locked within 2 packets (ch=9, sample=0x5678).
+[TEST D] Injecting corrupted stop bit (stop_bit = 0)...
+[PASS] Test (d): Detected framing error pulse on corrupted stop bit!
+[TEST E] Injecting 100 ns glitch on idle line (< HALF_BIT = 2170 ns)...
+[PASS] Test (e): Glitch rejected; receiver remained in IDLE state.
+================================================================
+>>> ALL 5 TESTS PASSED! UART RX & PACKET FRAMING VERIFIED! <<<
+================================================================
+rtl/tb_uart_rx.v:255: $finish called at 4507400000 (1ps)

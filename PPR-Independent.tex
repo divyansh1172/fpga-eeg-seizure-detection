@@ -1,0 +1,107 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[review]{cvpr} % Line 8: review option as requested by the professor
+
+% Include other packages here, before hyperref.
+\usepackage[hidelinks]{hyperref}
+
+\begin{document}
+
+\title{Real-Time EEG Seizure Detection on Spartan-7 FPGA using DWT and SVM}
+
+\author{
+Anonymous EE2000 Team\\
+Indian Institute of Technology Hyderabad\\
+{\tt\small \{roll1, roll2, roll3, roll4\}@iith.ac.in}
+}
+
+\maketitle
+
+\begin{abstract}
+Epileptic seizures are sudden, unpredictable neurological events that manifest as abnormal electrical activity in the brain. Continuous monitoring through Electroencephalogram (EEG) is essential for diagnosis and real-time intervention. This preliminary report outlines the design and literature foundation for a real-time, low-latency EEG seizure detection system to be implemented on the Xilinx Spartan-7 FPGA (Boolean Board). The proposed pipeline utilizes a Discrete Wavelet Transform (DWT) for time-frequency feature extraction and a linear Support Vector Machine (SVM) for classification. By executing the model inference on hardware, we aim to achieve deterministic latency and low power consumption suitable for edge-device applications. The system will be evaluated using the open-access CHB-MIT Scalp EEG database. This report presents the problem statement, reviews relevant literature, and describes the planned methodology and hardware mapping strategy, ensuring a practical and mathematically grounded approach without relying on excessively complex architectures.
+\end{abstract}
+
+\section{Introduction}
+Epilepsy is a chronic neurological disorder characterized by recurrent, unprovoked seizures. The primary non-invasive diagnostic tool for epilepsy is the Electroencephalogram (EEG), which records the electrical activity of the brain via electrodes placed on the scalp. During a seizure, the EEG typically exhibits transient, hypersynchronous abnormal patterns. Rapid and automatic detection of these patterns can alert caregivers, improve patient safety, and reduce the time neurologists spend reviewing lengthy EEG recordings.
+
+Implementing seizure detection algorithms on hardware platforms like Field Programmable Gate Arrays (FPGAs) is highly desirable for wearable and point-of-care medical devices. FPGAs offer significant advantages over general-purpose processors, including fine-grained parallelism and deterministic latency, which are crucial for real-time digital signal processing (DSP). 
+
+The objective of this project is to develop an FPGA-based seizure detection system using the Xilinx Spartan-7 XC7S50. The target pipeline relies on classical, interpretable signal processing techniques: the Discrete Wavelet Transform (DWT) for decomposing the non-stationary EEG signal, followed by statistical feature extraction and a linear Support Vector Machine (SVM) classifier. This approach avoids the massive memory and computational overhead of Deep Neural Networks (DNNs), making it highly suitable for the resource constraints of the Spartan-7 (120 DSP slices and $\sim$337 KB Block RAM).
+
+\section{Problem Statement}
+The goal is to design, simulate, and implement a real-time hardware pipeline that classifies incoming EEG epochs as ``seizure'' or ``non-seizure''. The system must:
+\begin{enumerate}
+    \item Read digitized EEG data (simulated via UART playback from a host PC).
+    \item Perform bandpass filtering and windowing on the continuous stream.
+    \item Compute the DWT (using the Daubechies-4 wavelet) to extract frequency sub-bands relevant to EEG rhythms ($\delta, \theta, \alpha, \beta, \gamma$).
+    \item Calculate statistical features (e.g., sub-band energy) from the wavelet coefficients.
+    \item Classify the feature vector using a linear SVM trained offline.
+    \item Output a real-time binary decision (e.g., via an LED or seven-segment display on the Boolean Board).
+\end{enumerate}
+
+The project will focus on the engineering trade-offs involved in porting a floating-point Python model to a fixed-point Verilog hardware description, analyzing the impact of quantization on classification accuracy and the optimization of FPGA resources (DSP slices, LUTs, BRAM).
+
+\section{Literature Review}
+The automated detection of epileptic seizures from EEG has a rich history in signal processing literature. Early rule-based methods, such as Gotman's work in 1982 \cite{gotman1982}, relied on thresholding half-wave decompositions and spectral energy. While effective as a baseline, these methods often struggled with the high variability of seizure morphologies and the presence of muscle and eye-blink artifacts.
+
+With the advent of machine learning, the paradigm shifted toward statistical feature extraction combined with trained classifiers. A foundational benchmark in this area is the work by Shoeb and Guttag (2010) \cite{shoeb2010}, which introduced a patient-specific linear SVM classifier that evaluated spatio-spectral features across multiple channels. Evaluated on the CHB-MIT Scalp EEG database---which they helped establish---their system achieved 96\% sensitivity with a low false-alarm rate. This established the viability of SVMs for robust seizure detection using time-frequency representations.
+
+For hardware implementation, the Discrete Wavelet Transform (DWT) is highly preferred due to its efficiency in hardware compared to the Short-Time Fourier Transform (STFT). The DWT provides variable time-frequency resolution, capturing both low-frequency background rhythms and high-frequency transient spikes perfectly. Shanmugam and Dharmar (2022) \cite{shanmugam2022} demonstrated an efficient FPGA implementation using a polyphase Daubechies-4 DWT front-end paired with a systolic-array linear SVM. Their work proved that standard DWT and SVM pipelines can be synthesized with minimal hardware overhead while achieving clinically acceptable accuracy, heavily inspiring our proposed data path.
+
+By grounding our project in these classical, proven methodologies, we ensure that the algorithmic foundation is robust and fully explicable, avoiding black-box deep learning models that are difficult to explain and map to constrained FPGA resources.
+
+\section{Proposed Methodology}
+
+\subsection{Dataset and Preprocessing}
+The system will be evaluated using the publicly available CHB-MIT Scalp EEG database from PhysioNet \cite{chbmit}. The dataset consists of continuous recordings from pediatric subjects with intractable seizures, sampled at 256 Hz. 
+
+Due to the extreme class imbalance (seizures occupy less than 1\% of the recordings), we will carefully partition the data. Preprocessing will involve segmenting the EEG stream into fixed-duration epochs (e.g., 2 seconds) and applying a digital bandpass filter to remove DC drift and high-frequency noise outside the 0.5--40 Hz physiological range of interest.
+
+\subsection{Feature Extraction (DWT)}
+The core signal processing block is a multi-level 1D-DWT using the Daubechies-4 (db4) mother wavelet. The db4 wavelet is chosen for its compact support and structural similarity to epileptic spikes. A 4- or 5-level decomposition will be used to isolate the clinical EEG frequency bands. From the resulting detail and approximation coefficients, we will compute sub-band energy and variance. These features are computationally cheap (requiring only multiply-accumulate operations) and highly discriminative.
+
+\subsection{Classification (Linear SVM)}
+A linear SVM will be used for classification. During the offline phase, the SVM will be trained in Python using standard libraries (e.g., scikit-learn) to find the optimal hyperplane separating seizure and non-seizure epochs. The resulting weights and bias will be quantized and loaded into the FPGA's block RAM. At inference, the hardware classifier simply computes the dot product of the incoming feature vector with the stored weight vector, making it exceptionally fast and deterministic.
+
+\subsection{Hardware Implementation and Verification}
+The development will proceed in three phases:
+\begin{enumerate}
+    \item \textbf{Software Baseline:} Development of a floating-point Python model to establish maximum theoretical accuracy.
+    \item \textbf{Fixed-Point Model:} Creation of a bit-accurate Python model to simulate the effects of word-length truncation (e.g., 16-bit fractional arithmetic) on the signal-to-quantization-noise ratio (SQNR) and classification performance.
+    \item \textbf{RTL Design:} Implementation of the pipeline in Verilog. The DWT will be implemented as a folded, time-multiplexed FIR filter to conserve DSP slices, given the low 256 Hz sampling rate. Testbenches will verify that the Verilog output matches the fixed-point Python model.
+\end{enumerate}
+
+\section{Conclusion}
+This project proposes a practical, hardware-accelerated EEG seizure detection system utilizing classical signal processing (DWT) and machine learning (SVM). By avoiding overly complex neural network architectures, the design remains fully interpretable, mathematically sound, and perfectly scaled for the Spartan-7 FPGA. The next phase will focus on implementing the software baseline and finalizing the fixed-point arithmetic parameters.
+
+{\small
+\bibliographystyle{ieee_fullname}
+\begin{thebibliography}{10}\itemsep=-1pt
+\bibitem{gotman1982}
+J. Gotman.
+\newblock Automatic recognition of epileptic seizures in the EEG.
+\newblock {\em Electroencephalography and Clinical Neurophysiology}, 54(5):530--540, 1982.
+
+\bibitem{shoeb2010}
+A. H. Shoeb and J. V. Guttag.
+\newblock Application of machine learning to epileptic seizure detection.
+\newblock In {\em Proc. 27th International Conference on Machine Learning (ICML)}, pages 975--982, 2010.
+
+\bibitem{shanmugam2022}
+S. Shanmugam and S. Dharmar.
+\newblock Very large scale integration implementation of seizure detection system with on-chip support vector machine classifier.
+\newblock {\em IET Circuits, Devices \& Systems}, 16(1):1--12, 2022.
+
+\bibitem{chbmit}
+A. L. Goldberger et al.
+\newblock PhysioBank, PhysioToolkit, and PhysioNet: Components of a new research resource for complex physiologic signals.
+\newblock {\em Circulation}, 101(23):e215--e220, 2000.
+\end{thebibliography}
+}
+
+\end{document}

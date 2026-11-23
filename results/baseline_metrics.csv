@@ -1,0 +1,4 @@
+total_seizures,detected_seizures,sensitivity,false_alarms,non_seizure_hours,fa_per_hour,mean_latency_sec,median_latency_sec,latencies,subject,k,feature_set,num_folds
+7,7,1.0,7,16.523056,0.42365044,3.7142857142857144,4.0,"[8.0, 2.0, 3.0, 0.0, 4.0, 4.0, 5.0]",chb01,3,all,17
+3,3,1.0,7,12.218612,0.5728965,5.666666666666667,7.0,"[7.0, 8.0, 2.0]",chb02,3,all,13
+7,7,1.0,3,16.888334,0.17763741,4.0,3.0,"[9.0, 4.0, 3.0, 3.0, 3.0, 3.0, 3.0]",chb03,3,all,17

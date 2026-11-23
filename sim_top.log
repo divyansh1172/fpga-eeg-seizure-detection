@@ -1,0 +1,26 @@
+================================================================================
+ EE2000 Full-System Seizure Detector Integration Testbench
+ Target: 22 Channels, 176 Features, 100 MHz Clock, Spartan-7 Architecture
+================================================================================
+
+[TEST 1] Streaming 1 full second of 22-channel EEG data (22,528 UART bytes)...
+  -> Stream complete. Waiting for pipeline drain and classification...
+  [SVM DONE] Window 0 Score:       -510788 | Decision: 0
+[PASS] Window 0 correctly classified as Non-Seizure (Score < 0)!
+[PASS] Status LED RGB0 is Solid Green (Streaming Active & Normal).
+
+[TEST 2] Testing seizure classification & alarm assertion...
+  -> Seizure window stream complete. Waiting for classifier...
+  [SVM DONE] Window 1 Score:        666451 | Decision: 1
+[PASS] Seizure alarm latched successfully!
+  Alarm Count: 1 | Detection Timestamp: 2 s
+[PASS] Alarm visual indicators active: LED15 and RGB0_R strobing.
+
+[TEST 3] Testing manual alarm clear via btn[1]...
+[PASS] Alarm successfully cleared! System returned to normal monitoring.
+
+================================================================================
+ ALL FULL-SYSTEM TESTS PASSED! End-to-end integration verified.
+================================================================================
+
+rtl/tb_top_seizure_detector.v:247: $finish called at 90118725000 (1ps)

@@ -1,0 +1,26 @@
+================================================================================
+ EE2000 Alarm Logic & Telemetry Self-Checking Verification
+================================================================================
+[TEST 1] Testing k=3 persistence...
+[PASS] k=3 triggered alarm on 3rd consecutive positive! Latency=15 s
+
+[TEST 2] Testing 30-second refractory blanking...
+[PASS] Refractory blanking blocked re-triggering during ongoing seizure.
+[PASS] Refractory timer counted down to 0 after 30 seconds.
+
+[TEST 3] Testing manual alarm clear via button...
+[PASS] Button clear successfully unlatched alarm and reset counter!
+
+[TEST 4] Testing k=1, k=2, and k=5...
+[PASS] k=1 triggered alarm immediately on 1st positive!
+[PASS] k=2 triggered alarm on 2nd positive!
+[PASS] k=5 triggered alarm on 5th positive!
+
+[TEST 5] Testing UART TX telemetry output...
+[PASS] UART TX line returned to Idle-High (1'b1). No break condition!
+
+================================================================================
+ ALL TESTS PASSED! Alarm logic and telemetry 100% verified.
+================================================================================
+
+rtl/tb_alarm_logic.v:296: $finish called at 44315000 (1ps)

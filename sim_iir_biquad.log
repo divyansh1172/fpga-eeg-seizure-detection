@@ -1,0 +1,14 @@
+================================================================
+ EE2000 TB_IIR_BIQUAD: 22-Channel Pipelined IIR Verification
+================================================================
+[TEST 1] Replaying 11264 interleaved samples across 22 channels...
+[INFO] Checked 11264 samples across 22 channels.
+[INFO] Overall Maximum Absolute Error: 0 LSB
+[PASS] Test 1: Bit-accurate agreement within <= 1 LSB achieved!
+
+[TEST 2] Testing Channel Crosstalk Isolation (stimulus only on ch5)...
+[PASS] Test 2: Zero crosstalk detected! Unstimulated channels remained at 0.
+================================================================
+>>> ALL IIR BIQUAD TESTS PASSED! TASK 2 VERIFIED! <<<
+================================================================
+rtl/tb_iir_biquad.v:188: $finish called at 1113975000 (1ps)

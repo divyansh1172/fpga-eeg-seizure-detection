@@ -1,0 +1,16 @@
+================================================================================
+ EE2000 Linear SVM Classifier Self-Checking Verification
+================================================================================
+[TEST 1] Evaluating SVM inference on 60 windows (10,560 features)...
+
+--- Verification Results ---
+Windows Evaluated:     60
+Correct Decisions:     60 / 60 (100.00% agreement)
+Maximum Score Error:   0 LSB
+[PASS] 100.00% Decision Agreement and Bit-Exact Scores across all 60 windows!
+
+================================================================================
+ ALL TESTS PASSED! Linear SVM classifier is 100% verified.
+================================================================================
+
+rtl/tb_svm_classifier.v:172: $finish called at 109895000 (1ps)
