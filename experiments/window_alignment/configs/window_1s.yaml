@@ -1,0 +1,109 @@
+# Configuration A: FPGA Hardware-Aligned (1.0s Window, Non-Overlapping)
+# Course: EE2000 Signal Processing, Fall 2026, IIT Hyderabad
+# Project: 22-Channel FPGA Seizure Detector
+
+name: "window_1s_fpga_aligned"
+description: "1.0-second non-overlapping window configuration matching Spartan-7 FPGA RTL architecture"
+
+sampling:
+  frequency_hz: 256
+  adc_scale_lsb_per_uv: 20.0
+
+windowing:
+  window_sec: 1.0
+  hop_sec: 1.0
+  window_samples: 256
+  hop_samples: 256
+  overlap_percent: 0.0
+  label_overlap_threshold: 0.5  # Positive if >= 50% within annotated seizure interval
+
+channels:
+  count: 22
+  montage_type: "bipolar"
+  channel_list:
+    - "FP1-F7"
+    - "F7-T7"
+    - "T7-P7"
+    - "P7-O1"
+    - "FP1-F3"
+    - "F3-C3"
+    - "C3-P3"
+    - "P3-O1"
+    - "FP2-F4"
+    - "F4-C4"
+    - "C4-P4"
+    - "P4-O2"
+    - "FP2-F8"
+    - "F8-T8"
+    - "T8-P8"
+    - "P8-O2"
+    - "FZ-CZ"
+    - "CZ-PZ"
+    - "P7-T7"
+    - "T7-FT9"
+    - "FT9-FT10"
+    - "FT10-T8"
+
+preprocessing:
+  bandpass_low_hz: 0.5
+  bandpass_high_hz: 25.0
+  iir_order: 2  # 4th-order cascade (two 2nd-order biquad sections)
+  filter_type: "butterworth"
+
+wavelet:
+  name: "db4"
+  decomposition_level: 5
+  retained_subbands:
+    - "D3"  # 16-32 Hz (Beta)
+    - "D4"  # 8-16 Hz (Alpha)
+    - "D5"  # 4-8 Hz (Theta)
+    - "A5"  # 0-4 Hz (Delta)
+  subband_coeff_counts:
+    D3: 32
+    D4: 16
+    D5: 8
+    A5: 8
+
+features:
+  per_subband:
+    - "energy"
+    - "line_length"
+  total_features: 176  # 22 channels * 4 subbands * 2 features
+  feature_ordering: "channel_major_subband_major_feature_minor"
+
+hardware_fixedpoint:
+  energy_shifts:
+    D3: 20
+    D4: 19
+    D5: 18
+    A5: 18
+  linelength_shifts:
+    D3: 5
+    D4: 4
+    D5: 3
+    A5: 3
+  feature_width: 16
+  weight_width: 16
+  bias_width: 32
+  accumulator_width: 40
+
+classifier:
+  type: "LinearSVC"
+  C: 1.0
+  class_weight: "balanced"
+  max_iter: 20000
+  random_seed: 42
+  standardize: true
+  standardize_on_train_only: true
+
+postprocess:
+  k_persistence: 3
+  refractory_sec: 30.0
+  tolerance_sec: 2.0
+
+evaluation:
+  protocol: "Leave-One-Record-Out"
+  subjects:
+    - "chb01"
+    - "chb02"
+    - "chb03"
