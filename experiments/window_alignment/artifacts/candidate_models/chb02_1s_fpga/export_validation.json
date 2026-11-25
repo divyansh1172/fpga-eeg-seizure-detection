@@ -1,0 +1,26 @@
+{
+  "validation_status": "PASSED",
+  "num_test_windows": 5,
+  "test_decisions": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "test_scores": [
+    -32692391,
+    -76199797,
+    -1962023628,
+    -178575287,
+    -51382727
+  ],
+  "weights_checksum": "0x669b5",
+  "hardware_compatibility": {
+    "weight_rom_depth": 176,
+    "weight_word_width_bits": 16,
+    "bias_word_width_bits": 32,
+    "accumulator_width_bits": 40,
+    "readmemh_compatible": true
+  }
+}

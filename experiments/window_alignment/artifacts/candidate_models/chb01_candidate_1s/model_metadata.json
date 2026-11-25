@@ -1,0 +1,28 @@
+{
+  "model_tag": "candidate_1s",
+  "subject": "chb01",
+  "config_name": "window_1s_fpga_aligned",
+  "window_sec": 1.0,
+  "is_deployment_candidate": true,
+  "trained_on_all_records": true,
+  "total_features": 176,
+  "hardware_scaling": {
+    "S_M_multiplier": 188696,
+    "max_abs_w_hw": 0.16538038649137046,
+    "b_fixed_int32": -1529417,
+    "b_fixed_hex": "FFE8A9B7",
+    "b_eff_float": -8.105189967957685,
+    "adc_lsb_per_uv": 20.0
+  },
+  "export_timestamp": "2026-11-24 16:40:39 UTC",
+  "files_exported": [
+    "weights.mem",
+    "bias.mem",
+    "model_metadata.json",
+    "feature_order.json",
+    "export_validation.json",
+    "expected_features.hex",
+    "expected_scores.hex",
+    "expected_decisions.hex"
+  ]
+}

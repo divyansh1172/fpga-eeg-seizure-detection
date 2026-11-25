@@ -1,0 +1,28 @@
+{
+  "model_tag": "candidate_2s",
+  "subject": "chb03",
+  "config_name": "window_2s_software_baseline",
+  "window_sec": 2.0,
+  "is_deployment_candidate": true,
+  "trained_on_all_records": true,
+  "total_features": 176,
+  "hardware_scaling": {
+    "S_M_multiplier": 807015,
+    "max_abs_w_hw": 0.03866923669392709,
+    "b_fixed_int32": -3122472,
+    "b_fixed_hex": "FFD05AD8",
+    "b_eff_float": -3.8691621002665713,
+    "adc_lsb_per_uv": 20.0
+  },
+  "export_timestamp": "2026-11-24 19:14:04 UTC",
+  "files_exported": [
+    "weights.mem",
+    "bias.mem",
+    "model_metadata.json",
+    "feature_order.json",
+    "export_validation.json",
+    "expected_features.hex",
+    "expected_scores.hex",
+    "expected_decisions.hex"
+  ]
+}

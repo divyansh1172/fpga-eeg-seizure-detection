@@ -312,7 +312,7 @@ module top_seizure_detector #(
     // Evaluates: y = sum(w_eff * X) + b_eff in 176 clock cycles
     // =========================================================================
     reg signed [15:0] svm_weight_rom [0:TOTAL_FEATS-1];
-    localparam signed [31:0] SVM_BIAS_EFF = 32'shFFF43986; // Exact 32-bit offline folded bias (-771706)
+    localparam signed [31:0] SVM_BIAS_EFF = 32'shFFD11248; // Exact 32-bit offline folded bias (-3075512, chb03_candidate_1s)
 
     initial begin
         $readmemh("weights.mem", svm_weight_rom);

@@ -1,0 +1,28 @@
+{
+  "model_tag": "1s_fpga",
+  "subject": "chb02",
+  "config_name": "window_1s_fpga_aligned",
+  "window_sec": 1.0,
+  "is_deployment_candidate": true,
+  "trained_on_all_records": true,
+  "total_features": 176,
+  "hardware_scaling": {
+    "S_M_multiplier": 6578006,
+    "max_abs_w_hw": 0.004744091894591207,
+    "b_fixed_int32": -32692391,
+    "b_fixed_hex": "FE0D2759",
+    "b_eff_float": -4.969954510842166,
+    "adc_lsb_per_uv": 20.0
+  },
+  "export_timestamp": "2026-11-24 16:30:14 UTC",
+  "files_exported": [
+    "weights.mem",
+    "bias.mem",
+    "model_metadata.json",
+    "feature_order.json",
+    "export_validation.json",
+    "expected_features.hex",
+    "expected_scores.hex",
+    "expected_decisions.hex"
+  ]
+}

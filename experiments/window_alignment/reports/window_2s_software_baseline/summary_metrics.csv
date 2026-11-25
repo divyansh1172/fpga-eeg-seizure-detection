@@ -1,0 +1,4 @@
+total_seizures,detected_seizures,seizure_sensitivity,total_false_alarms,non_seizure_hours,false_alarms_per_hour,mean_latency_sec,median_latency_sec,std_latency_sec,min_latency_sec,max_latency_sec,all_latencies,subject,config_name,window_sec,k_persistence,num_folds
+7,7,1.0,2,16.523,0.121,4.0,4.0,2.39,0.0,8.0,"[8.0, 4.0, 2.0, 0.0, 4.0, 4.0, 6.0]",chb01,window_2s_software_baseline,2.0,3,17
+3,3,1.0,4,12.219,0.327,6.0,8.0,2.83,2.0,8.0,"[8.0, 8.0, 2.0]",chb02,window_2s_software_baseline,2.0,3,13
+7,7,1.0,2,16.888,0.118,3.0,3.0,0.53,2.0,4.0,"[3.0, 4.0, 3.0, 2.0, 3.0, 3.0, 3.0]",chb03,window_2s_software_baseline,2.0,3,17

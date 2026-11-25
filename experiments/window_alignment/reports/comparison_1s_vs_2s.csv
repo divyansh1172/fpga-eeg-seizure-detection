@@ -1,0 +1,5 @@
+subject,seizures_total,config_1s_detected_seizures,config_1s_sensitivity_pct,config_1s_false_alarms,config_1s_non_seizure_hours,config_1s_fa_per_hour,config_1s_median_latency_sec,config_1s_mean_latency_sec,config_2s_detected_seizures,config_2s_sensitivity_pct,config_2s_false_alarms,config_2s_non_seizure_hours,config_2s_fa_per_hour,config_2s_median_latency_sec,config_2s_mean_latency_sec,delta_sensitivity_pct,delta_fa_per_hour,delta_median_latency_sec
+chb01,7,7,100.0,3,16.523,0.182,4.0,3.86,7,100.0,2,16.523,0.121,4.0,4.0,0.0,0.061,0.0
+chb02,3,3,100.0,5,12.219,0.409,9.0,7.33,3,100.0,4,12.219,0.327,8.0,6.0,0.0,0.082,1.0
+chb03,7,7,100.0,1,16.888,0.059,3.0,5.43,7,100.0,2,16.888,0.118,3.0,3.0,0.0,-0.059,0.0
+POOLED_COHORT,17,17,100.0,9,45.63,0.197,4.0,5.12,17,100.0,8,45.63,0.175,3.0,3.94,0.0,0.022,1.0
